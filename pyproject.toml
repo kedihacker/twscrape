@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "twscrape"
 version = "0.17.0"
-authors = [{ name = "vladkens", email = "v.pronsky@gmail.com" }]
+authors = [{ name = "vladkens", email = "v.pronsky@gmail.com" },{name="kedihacker"}]
 description = "Twitter GraphQL and Search API implementation with SNScrape data models"
 readme = "readme.md"
 requires-python = ">=3.10"
@@ -40,7 +40,7 @@ dev = [
 ]
 
 [project.urls]
-repository = "https://github.com/vladkens/twscrape"
+repository = "https://github.com/kedihacker/twscrape"
 
 [project.scripts]
 twscrape = "twscrape.cli:run"

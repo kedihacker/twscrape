@@ -8,3 +8,5 @@ accounts.db*
 data/
 data_media/
 dist/
+__pycache__
+.vscode

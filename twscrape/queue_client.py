@@ -204,7 +204,7 @@ class QueueClient:
         if err_msg.startswith("(326) Authorization: Denied by access control"):
             logger.warning(f"Ban detected: {log_msg}")
             await self._close_ctx(-1, inactive=True, msg=err_msg)
-            raise HandledError()
+            raise HandledError()    
 
         if err_msg.startswith("(32) Could not authenticate you"):
             logger.warning(f"Session expired or banned: {log_msg}")

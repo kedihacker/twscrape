@@ -14,38 +14,31 @@ async def get_scripts():
     text = await get_tw_page_text("https://x.com/elonmusk")
     urls = list(get_scripts_list(text))
 
-    # v = text.split("/client-web/main.")[1].split(".")[0]
-    # urls.append(script_url("main", v))
+    v = text.split("/client-web/main.")[1].split(".")[0]
+    urls.append(script_url("main", v))
 
     urls = [
         x
         for x in urls
-        if "/i18n/" not in x
-        and "/icons/" not in x
-        and "react-syntax-highlighter" not in x
+        if "/i18n/" not in x and "/icons/" not in x and "react-syntax-highlighter" not in x
     ]
 
-    scripts = [""] * len(urls)
-    async with httpx.AsyncClient(timeout=30) as client:
-        async with asyncio.TaskGroup() as TG:
-            for i, x in enumerate(urls):
-#does not work I messed up
-                async def getthing(i, x):
-                    cache_path = os.path.join(cache_dir, x.split("/")[-1].split("?")[0])
-                    if os.path.exists(cache_path):
-                        with open(cache_path) as fp:
-                            scripts[i] = fp.read()
-                        return
-                    print(f"({i:3d} / {len(urls):3d}) {x}")
-                    rep = await client.get(x)
-                    
-                    rep.raise_for_status()
-                    with open(cache_path, "w") as fp:
-                        fp.write(rep.text)
-                    scripts[i] = rep.text
+    scripts = []
+    async with httpx.AsyncClient() as client:
+        for i, x in enumerate(urls, 1):
+            cache_path = os.path.join(cache_dir, x.split("/")[-1].split("?")[0])
+            if os.path.exists(cache_path):
+                with open(cache_path) as fp:
+                    scripts.append(fp.read())
+                continue
 
-                TG.create_task(getthing(i, x))
-            # tasks are already awaited by TaskGroup
+            print(f"({i:3d} / {len(urls):3d}) {x}")
+            rep = await client.get(x)
+            rep.raise_for_status()
+
+            with open(cache_path, "w") as fp:
+                fp.write(rep.text)
+            scripts.append(rep.text)
 
     return scripts
 
@@ -53,11 +46,7 @@ async def get_scripts():
 async def main():
     with open("./twscrape/api.py") as fp:
         ops = [x.strip() for x in fp.read().split("\n")]
-        ops = [
-            x.split("=")[0].removeprefix("OP_").strip()
-            for x in ops
-            if x.startswith("OP_")
-        ]
+        ops = [x.split("=")[0].removeprefix("OP_").strip() for x in ops if x.startswith("OP_")]
 
     all_pairs = {}
     for txt in await get_scripts():
